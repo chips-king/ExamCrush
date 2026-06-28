@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { EmptyState, PageTitle, Panel } from "@/components/ui";
+import { readJsonResponse } from "@/lib/client-json";
 
 type AdminQuestion = {
   id: string;
@@ -86,7 +87,10 @@ export function AdminDashboard() {
 
   async function loadCourses() {
     const response = await fetch("/api/courses", { cache: "no-store" });
-    const data = await response.json();
+    const data = await readJsonResponse(response);
+    if (!response.ok || !Array.isArray(data)) {
+      throw new Error(data.error || "课程加载失败。");
+    }
     setCourses(
       data.map((course: AdminCourse) => ({
         ...course,
@@ -107,7 +111,7 @@ export function AdminDashboard() {
         ...(init.headers ?? {})
       }
     });
-    const data = await response.json().catch(() => ({}));
+    const data = await readJsonResponse(response);
 
     if (!response.ok) {
       throw new Error(data.error || "操作失败");

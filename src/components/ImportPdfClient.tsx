@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { EmptyState, PageTitle, Panel } from "@/components/ui";
+import { readJsonResponse } from "@/lib/client-json";
 import type { ImportPreview } from "@/lib/schemas";
 
 const emptyPreview: ImportPreview = {
@@ -36,9 +37,9 @@ export function ImportPdfClient() {
         headers: { "x-admin-password": password },
         body: form
       });
-      const data = await response.json();
+      const data = await readJsonResponse(response);
       if (!response.ok) throw new Error(data.error || "导入失败");
-      setPreview(data);
+      setPreview(data as ImportPreview);
       setMessage("PDF 解析完成，请检查预览后确认导入。");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "导入失败");
@@ -62,7 +63,7 @@ export function ImportPdfClient() {
         },
         body: JSON.stringify(preview)
       });
-      const data = await response.json();
+      const data = await readJsonResponse(response);
       if (!response.ok) throw new Error(data.error || "确认导入失败");
       setMessage("题库已导入。");
       setPreview(emptyPreview);

@@ -1,3 +1,4 @@
+import { jsonrepair } from "jsonrepair";
 import { importPreviewSchema } from "@/lib/schemas";
 
 function extractJson(content: string) {
@@ -10,7 +11,13 @@ function extractJson(content: string) {
     throw new Error("DeepSeek 未返回有效 JSON。");
   }
 
-  return JSON.parse(candidate.slice(start, end + 1));
+  const jsonText = candidate.slice(start, end + 1);
+
+  try {
+    return JSON.parse(jsonText);
+  } catch {
+    return JSON.parse(jsonrepair(jsonText));
+  }
 }
 
 export async function parseQuestionsWithDeepSeek(pdfText: string) {
@@ -36,7 +43,7 @@ export async function parseQuestionsWithDeepSeek(pdfText: string) {
         {
           role: "system",
           content:
-            "你是题库结构化助手。只输出严格 JSON，不要输出 Markdown。type 只能是 single、blank、short、code。"
+            "你是题库结构化助手。只输出严格 JSON，不要输出 Markdown。不要省略逗号，不要写注释。type 只能是 single、blank、short、code。"
         },
         {
           role: "user",
