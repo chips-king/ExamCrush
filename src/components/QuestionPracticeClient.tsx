@@ -69,6 +69,7 @@ export function QuestionPracticeClient({
 
   useEffect(() => {
     const progress = readJson<ProgressMap>("examcrush:progress", {});
+    setShowAnswer(false);
     setValue(progress[question.id]?.value ?? "");
     setFavorites(readJson<string[]>("examcrush:favorites", []));
     setMistakes(readJson<string[]>("examcrush:mistakes", []));
