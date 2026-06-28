@@ -15,7 +15,7 @@ function extractJson(content: string) {
 
 export async function parseQuestionsWithDeepSeek(pdfText: string) {
   const apiKey = process.env.DEEPSEEK_API_KEY;
-  const model = process.env.DEEPSEEK_MODEL || "deepseek-v4";
+  const model = process.env.DEEPSEEK_MODEL || "deepseek-v4-flash";
 
   if (!apiKey) {
     throw new Error("DEEPSEEK_API_KEY is not configured.");
@@ -30,6 +30,8 @@ export async function parseQuestionsWithDeepSeek(pdfText: string) {
     body: JSON.stringify({
       model,
       temperature: 0.1,
+      response_format: { type: "json_object" },
+      thinking: { type: "disabled" },
       messages: [
         {
           role: "system",
