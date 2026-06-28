@@ -41,6 +41,14 @@ function readJson<T>(key: string, fallback: T): T {
   }
 }
 
+function getOptionKey(option: string) {
+  return option.trim().match(/^([A-D])[\s.．、]/)?.[1] ?? "";
+}
+
+function getAnswerKey(answer: string) {
+  return answer.trim().match(/^([A-D])/)?.[1] ?? "";
+}
+
 export function QuestionPracticeClient({
   question,
   previousId,
@@ -57,6 +65,7 @@ export function QuestionPracticeClient({
 
   const favorite = favorites.includes(question.id);
   const mistake = mistakes.includes(question.id);
+  const correctOptionKey = getAnswerKey(question.answer);
 
   useEffect(() => {
     const progress = readJson<ProgressMap>("examcrush:progress", {});
@@ -78,26 +87,37 @@ export function QuestionPracticeClient({
     if (question.type === "single") {
       return (
         <div className="space-y-2">
-          {question.options.map((option) => (
-            <label
-              key={option}
-              className={`flex cursor-pointer items-start gap-3 rounded-md border p-3 transition ${
-                value === option
-                  ? "border-mint bg-mint/10"
-                  : "border-line bg-white hover:border-mint"
-              }`}
-            >
-              <input
-                type="radio"
-                name={question.id}
-                value={option}
-                checked={value === option}
-                onChange={(event) => setValue(event.target.value)}
-                className="mt-1 text-mint focus:ring-mint"
-              />
-              <span className="text-sm leading-6">{option}</span>
-            </label>
-          ))}
+          {question.options.map((option) => {
+            const optionKey = getOptionKey(option);
+            const isCorrect = showAnswer && optionKey === correctOptionKey;
+            const isWrong =
+              showAnswer && value === option && optionKey !== correctOptionKey;
+
+            return (
+              <label
+                key={option}
+                className={`flex cursor-pointer items-start gap-3 rounded-md border p-3 transition ${
+                  isCorrect
+                    ? "border-mint bg-mint/15"
+                    : isWrong
+                      ? "border-tomato bg-tomato/10"
+                      : value === option
+                        ? "border-mint bg-mint/10"
+                        : "border-line bg-white hover:border-mint"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name={question.id}
+                  value={option}
+                  checked={value === option}
+                  onChange={(event) => setValue(event.target.value)}
+                  className="mt-1 text-mint focus:ring-mint"
+                />
+                <span className="text-sm leading-6">{option}</span>
+              </label>
+            );
+          })}
         </div>
       );
     }
@@ -122,7 +142,7 @@ export function QuestionPracticeClient({
         className="focus-ring w-full rounded-md border-line bg-white font-mono text-sm leading-6"
       />
     );
-  }, [question, value]);
+  }, [correctOptionKey, question, showAnswer, value]);
 
   function toggleStoredList(
     key: "examcrush:favorites" | "examcrush:mistakes",
