@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+enum QuestionType {
+  single
+  blank
+  short
+  code
+}
+
+model Course {
+  id          String    @id @default(cuid())
+  name        String
+  description String    @default("")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  chapters    Chapter[]
+}
+
+model Chapter {
+  id        String     @id @default(cuid())
+  courseId  String
+  title     String
+  order     Int        @default(1) @map("sort_order")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  course    Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions Question[]
+
+  @@index([courseId, order])
+}
+
+model Question {
+  id        String       @id @default(cuid())
+  chapterId String
+  type      QuestionType
+  content   String
+  options   Json         @default("[]")
+  answer    String       @default("")
+  analysis  String       @default("")
+  order     Int          @default(1) @map("sort_order")
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  chapter   Chapter      @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@index([chapterId, order])
+}
