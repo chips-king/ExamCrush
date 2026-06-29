@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { LatexText } from "@/components/LatexText";
 import { EmptyState, Panel } from "@/components/ui";
 import { readJsonResponse } from "@/lib/client-json";
 
@@ -133,9 +134,10 @@ export function StoredQuestionsClient({
                     {typeLabels[question.type]}
                   </span>
                 </div>
-                <p className="line-clamp-3 whitespace-pre-wrap text-sm font-semibold leading-6 text-ink">
-                  {question.content}
-                </p>
+                <LatexText
+                  text={question.content}
+                  className="line-clamp-3 text-sm font-semibold leading-6 text-ink"
+                />
               </Link>
 
               <button

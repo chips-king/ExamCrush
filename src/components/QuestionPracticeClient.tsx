@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { LatexText } from "@/components/LatexText";
 import { ButtonLink, Panel } from "@/components/ui";
 
 type PracticeQuestion = {
@@ -106,7 +107,7 @@ export function QuestionPracticeClient({
                   onChange={(event) => setValue(event.target.value)}
                   className="mt-1 text-mint focus:ring-mint"
                 />
-                <span className="text-sm leading-6">{option}</span>
+                <LatexText text={option} className="text-sm leading-6" />
               </label>
             );
           })}
@@ -198,9 +199,10 @@ export function QuestionPracticeClient({
           </div>
         </div>
 
-        <div className="whitespace-pre-wrap text-base font-semibold leading-8 text-ink">
-          {question.content}
-        </div>
+        <LatexText
+          text={question.content}
+          className="text-base font-semibold leading-8 text-ink"
+        />
       </Panel>
 
       <Panel>
@@ -234,13 +236,15 @@ export function QuestionPracticeClient({
       {showAnswer ? (
         <Panel className="border-mint/30">
           <h2 className="mb-2 text-sm font-black text-mint">参考答案</h2>
-          <div className="whitespace-pre-wrap text-sm leading-7 text-ink">
-            {question.answer || "暂无答案"}
-          </div>
+          <LatexText
+            text={question.answer || "暂无答案"}
+            className="text-sm leading-7 text-ink"
+          />
           <h2 className="mb-2 mt-5 text-sm font-black text-mint">解析</h2>
-          <div className="whitespace-pre-wrap text-sm leading-7 text-ink/75">
-            {question.analysis || "暂无解析"}
-          </div>
+          <LatexText
+            text={question.analysis || "暂无解析"}
+            className="text-sm leading-7 text-ink/75"
+          />
         </Panel>
       ) : null}
     </div>

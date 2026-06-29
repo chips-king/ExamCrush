@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { LatexText } from "@/components/LatexText";
 import { EmptyState } from "@/components/ui";
 import { questionTypes } from "@/lib/schemas";
 
@@ -62,9 +63,10 @@ export function ChapterQuestionsClient({ questions }: { questions: Question[] })
                   {typeLabels[question.type]}
                 </span>
               </div>
-              <p className="line-clamp-2 text-sm font-semibold leading-6 text-ink">
-                {question.content}
-              </p>
+              <LatexText
+                text={question.content}
+                className="line-clamp-2 text-sm font-semibold leading-6 text-ink"
+              />
             </Link>
           ))}
         </div>

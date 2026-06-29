@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { LatexText } from "@/components/LatexText";
 import { EmptyState, PageTitle, Panel } from "@/components/ui";
 import { readJsonResponse } from "@/lib/client-json";
 
@@ -544,9 +545,10 @@ export function AdminDashboard() {
                             key={question.id}
                             className="flex flex-wrap items-center justify-between gap-3 p-3"
                           >
-                            <p className="line-clamp-2 flex-1 text-sm font-semibold leading-6">
-                              #{question.order} {question.content}
-                            </p>
+                            <div className="min-w-0 flex-1 text-sm font-semibold leading-6">
+                              <span>#{question.order} </span>
+                              <LatexText text={question.content} className="inline" />
+                            </div>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => startEdit(question)}
@@ -588,9 +590,10 @@ export function AdminDashboard() {
                 <p className="mb-1 text-xs font-bold text-ink/45">
                   {question.courseName} / {question.chapterTitle}
                 </p>
-                <p className="line-clamp-2 font-semibold leading-6">
-                  {question.content}
-                </p>
+                <LatexText
+                  text={question.content}
+                  className="line-clamp-2 font-semibold leading-6"
+                />
               </Link>
             ))}
           </div>

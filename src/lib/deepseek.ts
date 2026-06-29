@@ -43,7 +43,7 @@ export async function parseQuestionsWithDeepSeek(pdfText: string) {
         {
           role: "system",
           content:
-            "你是题库结构化助手。只输出严格 JSON，不要输出 Markdown。不要省略逗号，不要写注释。type 只能是 single、blank、short、code。"
+            "你是题库结构化助手。只输出严格 JSON，不要输出 Markdown。不要省略逗号，不要写注释。type 只能是 single、blank、short、code。遇到数学公式、统计公式、矩阵、积分、上下标等内容时，保留或转换为 LaTeX 源码；行内公式使用 \\(...\\)，独立公式使用 \\[...\\]。"
         },
         {
           role: "user",
@@ -67,6 +67,12 @@ export async function parseQuestionsWithDeepSeek(pdfText: string) {
     }
   ]
 }
+
+公式要求：
+- 公式必须保留在 content、options、answer、analysis 对应文本中。
+- 行内公式统一写成 \\(x^2+y^2\\)。
+- 独立公式统一写成 \\[\\int_0^1 x^2 dx\\]。
+- 不要把公式转成图片、HTML 或 Markdown。
 
 PDF 文本：
 ${pdfText.slice(0, 55000)}`
