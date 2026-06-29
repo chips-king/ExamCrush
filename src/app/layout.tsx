@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -28,6 +29,18 @@ export default function RootLayout({
                 前台
               </Link>
               <Link
+                href="/favorites"
+                className="rounded-md px-3 py-2 text-ink/75 transition hover:bg-white hover:text-ink"
+              >
+                收藏
+              </Link>
+              <Link
+                href="/mistakes"
+                className="rounded-md px-3 py-2 text-ink/75 transition hover:bg-white hover:text-ink"
+              >
+                错题本
+              </Link>
+              <Link
                 href="/admin"
                 className="rounded-md px-3 py-2 text-ink/75 transition hover:bg-white hover:text-ink"
               >
@@ -39,6 +52,7 @@ export default function RootLayout({
         <main className="mx-auto min-h-[calc(100vh-73px)] max-w-6xl px-4 py-6 md:py-8">
           {children}
         </main>
+        <Analytics />
       </body>
     </html>
   );

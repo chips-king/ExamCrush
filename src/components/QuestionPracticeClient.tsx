@@ -22,8 +22,6 @@ type PracticeQuestion = {
   };
 };
 
-type ProgressMap = Record<string, { value: string; viewedAt: string }>;
-
 const typeLabels: Record<PracticeQuestion["type"], string> = {
   single: "单选题",
   blank: "填空题",
@@ -31,10 +29,10 @@ const typeLabels: Record<PracticeQuestion["type"], string> = {
   code: "编程题"
 };
 
-function readJson<T>(key: string, fallback: T): T {
+function readJson<T>(storage: Storage, key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   try {
-    const value = window.localStorage.getItem(key);
+    const value = storage.getItem(key);
     return value ? (JSON.parse(value) as T) : fallback;
   } catch {
     return fallback;
@@ -66,23 +64,16 @@ export function QuestionPracticeClient({
   const favorite = favorites.includes(question.id);
   const mistake = mistakes.includes(question.id);
   const correctOptionKey = getAnswerKey(question.answer);
+  const chapterHref = `/course/${question.chapter.course.id}/chapter/${question.chapter.id}`;
 
   useEffect(() => {
-    const progress = readJson<ProgressMap>("examcrush:progress", {});
     setShowAnswer(false);
-    setValue(progress[question.id]?.value ?? "");
-    setFavorites(readJson<string[]>("examcrush:favorites", []));
-    setMistakes(readJson<string[]>("examcrush:mistakes", []));
+    setValue("");
+    window.sessionStorage.removeItem("examcrush:progress");
+    window.localStorage.removeItem("examcrush:progress");
+    setFavorites(readJson<string[]>(window.localStorage, "examcrush:favorites", []));
+    setMistakes(readJson<string[]>(window.localStorage, "examcrush:mistakes", []));
   }, [question.id]);
-
-  useEffect(() => {
-    const progress = readJson<ProgressMap>("examcrush:progress", {});
-    progress[question.id] = {
-      value,
-      viewedAt: new Date().toISOString()
-    };
-    window.localStorage.setItem("examcrush:progress", JSON.stringify(progress));
-  }, [question.id, value]);
 
   const input = useMemo(() => {
     if (question.type === "single") {
@@ -168,7 +159,7 @@ export function QuestionPracticeClient({
         </Link>
         <span>/</span>
         <Link
-          href={`/course/${question.chapter.course.id}/chapter/${question.chapter.id}`}
+          href={chapterHref}
           className="font-bold text-mint hover:underline"
         >
           {question.chapter.title}
@@ -224,19 +215,20 @@ export function QuestionPracticeClient({
               上一题
             </ButtonLink>
           ) : null}
-          {nextId ? (
-            <ButtonLink href={`/question/${nextId}`} tone="plain">
-              下一题
-            </ButtonLink>
-          ) : null}
         </div>
-        <button
-          type="button"
-          onClick={() => setShowAnswer((current) => !current)}
-          className="focus-ring rounded-md bg-ink px-4 py-2 text-sm font-black text-white transition hover:bg-mint"
-        >
-          {showAnswer ? "收起答案" : "查看答案"}
-        </button>
+        {showAnswer ? (
+          <ButtonLink href={nextId ? `/question/${nextId}` : chapterHref}>
+            {nextId ? "下一题" : "返回章节"}
+          </ButtonLink>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowAnswer(true)}
+            className="focus-ring rounded-md bg-ink px-4 py-2 text-sm font-black text-white transition hover:bg-mint"
+          >
+            查看答案
+          </button>
+        )}
       </div>
 
       {showAnswer ? (
