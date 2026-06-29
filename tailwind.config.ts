@@ -1,18 +1,19 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
-        ink: "#1f2933",
-        paper: "#f7f6f2",
-        line: "#d8d2c4",
-        mint: "#2f7d69",
-        tomato: "#c7503f"
+        ink: "rgb(var(--color-ink) / <alpha-value>)",
+        paper: "rgb(var(--color-paper) / <alpha-value>)",
+        line: "rgb(var(--color-line) / <alpha-value>)",
+        mint: "rgb(var(--color-mint) / <alpha-value>)",
+        tomato: "rgb(var(--color-tomato) / <alpha-value>)"
       },
       boxShadow: {
-        panel: "0 1px 0 rgba(31, 41, 51, 0.08), 0 12px 30px rgba(31, 41, 51, 0.08)"
+        panel: "var(--shadow-panel)"
       }
     }
   },

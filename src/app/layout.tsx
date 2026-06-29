@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,14 +15,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("examcrush:theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d)}catch(e){}`,
+          }}
+        />
+      </head>
       <body>
         <header className="border-b border-line bg-paper/90 backdrop-blur">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
             <Link href="/" className="text-lg font-black tracking-tight">
               ExamCrush
             </Link>
-            <nav className="flex items-center gap-2 text-sm">
+            <nav className="flex flex-wrap items-center justify-end gap-2 text-sm">
               <Link
                 href="/"
                 className="rounded-md px-3 py-2 text-ink/75 transition hover:bg-white hover:text-ink"
@@ -46,6 +54,7 @@ export default function RootLayout({
               >
                 后台
               </Link>
+              <ThemeToggle />
             </nav>
           </div>
         </header>

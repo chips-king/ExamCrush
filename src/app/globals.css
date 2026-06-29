@@ -3,8 +3,33 @@
 @tailwind utilities;
 
 :root {
-  color: #1f2933;
-  background: #f7f6f2;
+  --color-ink: 31 41 51;
+  --color-paper: 247 246 242;
+  --color-line: 216 210 196;
+  --color-mint: 47 125 105;
+  --color-tomato: 199 80 63;
+  --color-panel: 255 255 255;
+  --body-wash-top: 255 255 255;
+  --body-wash-bottom: 247 246 242;
+  --shadow-panel: 0 1px 0 rgba(31, 41, 51, 0.08),
+    0 12px 30px rgba(31, 41, 51, 0.08);
+  color: rgb(var(--color-ink));
+  background: rgb(var(--color-paper));
+  color-scheme: light;
+}
+
+.dark {
+  --color-ink: 232 235 229;
+  --color-paper: 18 22 24;
+  --color-line: 55 68 68;
+  --color-mint: 107 211 177;
+  --color-tomato: 255 132 111;
+  --color-panel: 25 31 32;
+  --body-wash-top: 30 39 38;
+  --body-wash-bottom: 14 18 20;
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 38px rgba(0, 0, 0, 0.32);
+  color-scheme: dark;
 }
 
 * {
@@ -15,9 +40,13 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(247, 246, 242, 0.9)),
-    #f7f6f2;
-  color: #1f2933;
+    linear-gradient(
+      180deg,
+      rgb(var(--body-wash-top) / 0.72),
+      rgb(var(--body-wash-bottom) / 0.92)
+    ),
+    rgb(var(--color-paper));
+  color: rgb(var(--color-ink));
   font-family:
     ui-sans-serif,
     system-ui,
@@ -25,6 +54,38 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+}
+
+input,
+textarea,
+select {
+  background-color: rgb(var(--color-panel));
+  color: rgb(var(--color-ink));
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgb(var(--color-ink) / 0.42);
+}
+
+.dark .bg-white,
+.dark .bg-white\/60,
+.dark .bg-white\/70,
+.dark .bg-white\/82 {
+  background-color: rgb(var(--color-panel) / var(--tw-bg-opacity, 1)) !important;
+}
+
+.dark .hover\:bg-white:hover {
+  background-color: rgb(var(--color-panel) / 0.92) !important;
+}
+
+.dark .bg-ink,
+.dark .hover\:bg-ink:hover {
+  background-color: rgb(8 13 14 / var(--tw-bg-opacity, 1)) !important;
+}
+
+.dark .border-ink {
+  border-color: rgb(8 13 14 / var(--tw-border-opacity, 1)) !important;
 }
 
 a {
