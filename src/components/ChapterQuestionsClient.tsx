@@ -68,7 +68,7 @@ export function ChapterQuestionsClient({
   if (activeQuestion) {
     return (
       <div className="space-y-4">
-        <div className="flex flex-col items-start gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <ButtonLink href={courseHref} tone="plain">
             返回课程
           </ButtonLink>
