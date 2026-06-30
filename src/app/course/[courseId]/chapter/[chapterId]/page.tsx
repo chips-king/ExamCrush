@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { ChapterQuestionsClient } from "@/components/ChapterQuestionsClient";
-import { ButtonLink, EmptyState, PageTitle } from "@/components/ui";
+import { EmptyState, PageTitle } from "@/components/ui";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -37,16 +37,11 @@ export default async function ChapterPage({
         description={`本章共 ${chapter.questions.length} 题，可按题型筛选。`}
       />
 
-      <div className="mb-5 flex flex-wrap gap-2">
-        <ButtonLink href={`/course/${chapter.courseId}`} tone="plain">
-          返回课程
-        </ButtonLink>
-      </div>
-
       {chapter.questions.length === 0 ? (
         <EmptyState>这个章节还没有题目。</EmptyState>
       ) : (
         <ChapterQuestionsClient
+          courseHref={`/course/${chapter.courseId}`}
           initialQuestionId={initialQuestionId}
           questions={chapter.questions.map((question) => ({
             id: question.id,

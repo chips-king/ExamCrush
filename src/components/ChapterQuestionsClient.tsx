@@ -6,7 +6,7 @@ import {
   PracticeQuestion,
   QuestionPracticeClient
 } from "@/components/QuestionPracticeClient";
-import { EmptyState, Panel } from "@/components/ui";
+import { ButtonLink, EmptyState, Panel } from "@/components/ui";
 import { questionTypes } from "@/lib/schemas";
 
 type Question = PracticeQuestion;
@@ -19,9 +19,11 @@ const typeLabels: Record<Question["type"], string> = {
 };
 
 export function ChapterQuestionsClient({
+  courseHref,
   questions,
   initialQuestionId
 }: {
+  courseHref: string;
   questions: Question[];
   initialQuestionId?: string;
 }) {
@@ -66,13 +68,18 @@ export function ChapterQuestionsClient({
   if (activeQuestion) {
     return (
       <div className="space-y-4">
-        <button
-          type="button"
-          onClick={() => setActiveQuestionId(null)}
-          className="focus-ring rounded-md border border-line bg-white px-4 py-2 text-sm font-bold hover:border-mint"
-        >
-          返回题目列表
-        </button>
+        <div className="flex flex-col items-start gap-2">
+          <ButtonLink href={courseHref} tone="plain">
+            返回课程
+          </ButtonLink>
+          <button
+            type="button"
+            onClick={() => setActiveQuestionId(null)}
+            className="focus-ring rounded-md border border-line bg-white px-4 py-2 text-sm font-bold hover:border-mint"
+          >
+            返回题目列表
+          </button>
+        </div>
 
         <QuestionPracticeClient
           question={activeQuestion}
@@ -88,6 +95,12 @@ export function ChapterQuestionsClient({
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-col items-start gap-2">
+        <ButtonLink href={courseHref} tone="plain">
+          返回课程
+        </ButtonLink>
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {["all", ...questionTypes].map((item) => (
