@@ -3,6 +3,11 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+function normalizeOptions(options: unknown): string[] {
+  if (!Array.isArray(options)) return [];
+  return options.filter((option): option is string => typeof option === "string");
+}
+
 export async function GET(request: NextRequest) {
   const ids = request.nextUrl.searchParams
     .get("ids")
@@ -35,6 +40,9 @@ export async function GET(request: NextRequest) {
         id: question.id,
         type: question.type,
         content: question.content,
+        options: normalizeOptions(question.options),
+        answer: question.answer,
+        analysis: question.analysis,
         order: question.order,
         chapter: {
           id: question.chapter.id,

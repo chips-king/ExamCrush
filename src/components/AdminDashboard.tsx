@@ -78,6 +78,8 @@ export function AdminDashboard() {
         course.chapters.flatMap((chapter) =>
           chapter.questions.map((question) => ({
             ...normalizeQuestion(question),
+            courseId: course.id,
+            chapterId: chapter.id,
             courseName: course.name,
             chapterTitle: chapter.title
           }))
@@ -584,7 +586,7 @@ export function AdminDashboard() {
             {flatQuestions.slice(0, 20).map((question) => (
               <Link
                 key={question.id}
-                href={`/question/${question.id}`}
+                href={`/course/${question.courseId}/chapter/${question.chapterId}?question=${question.id}`}
                 className="rounded-md border border-line bg-white p-3 text-sm hover:border-mint"
               >
                 <p className="mb-1 text-xs font-bold text-ink/45">

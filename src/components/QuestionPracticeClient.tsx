@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { LatexText } from "@/components/LatexText";
-import { ButtonLink, Panel } from "@/components/ui";
+import { Panel } from "@/components/ui";
 
-type PracticeQuestion = {
+export type PracticeQuestion = {
   id: string;
   type: "single" | "blank" | "short" | "code";
   content: string;
@@ -51,11 +51,19 @@ function getAnswerKey(answer: string) {
 export function QuestionPracticeClient({
   question,
   previousId,
-  nextId
+  nextId,
+  onPrevious,
+  onNext,
+  onReturnToChapter,
+  returnLabel = "返回章节"
 }: {
   question: PracticeQuestion;
   previousId: string | null;
   nextId: string | null;
+  onPrevious: () => void;
+  onNext: () => void;
+  onReturnToChapter: () => void;
+  returnLabel?: string;
 }) {
   const [showAnswer, setShowAnswer] = useState(false);
   const [value, setValue] = useState("");
@@ -213,15 +221,23 @@ export function QuestionPracticeClient({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-2">
           {previousId ? (
-            <ButtonLink href={`/question/${previousId}`} tone="plain">
+            <button
+              type="button"
+              onClick={onPrevious}
+              className="focus-ring inline-flex items-center justify-center rounded-md border border-line bg-white px-4 py-2 text-sm font-bold text-ink transition hover:border-mint"
+            >
               上一题
-            </ButtonLink>
+            </button>
           ) : null}
         </div>
         {showAnswer ? (
-          <ButtonLink href={nextId ? `/question/${nextId}` : chapterHref}>
-            {nextId ? "下一题" : "返回章节"}
-          </ButtonLink>
+          <button
+            type="button"
+            onClick={nextId ? onNext : onReturnToChapter}
+            className="focus-ring inline-flex items-center justify-center rounded-md bg-ink px-4 py-2 text-sm font-bold text-white transition hover:bg-mint"
+          >
+            {nextId ? "下一题" : returnLabel}
+          </button>
         ) : (
           <button
             type="button"

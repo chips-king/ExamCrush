@@ -1,25 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { LatexText } from "@/components/LatexText";
+import {
+  PracticeQuestion,
+  QuestionPracticeClient
+} from "@/components/QuestionPracticeClient";
 import { EmptyState, Panel } from "@/components/ui";
 import { readJsonResponse } from "@/lib/client-json";
 
-type StoredQuestion = {
-  id: string;
-  type: "single" | "blank" | "short" | "code";
-  content: string;
-  order: number;
-  chapter: {
-    id: string;
-    title: string;
-    course: {
-      id: string;
-      name: string;
-    };
-  };
-};
+type StoredQuestion = PracticeQuestion;
 
 type StoredQuestionsResponse = {
   questions: StoredQuestion[];
@@ -41,6 +31,7 @@ export function StoredQuestionsClient({
 }) {
   const [ids, setIds] = useState<string[]>([]);
   const [questions, setQuestions] = useState<StoredQuestion[]>([]);
+  const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
@@ -72,6 +63,11 @@ export function StoredQuestionsClient({
       .then((data: StoredQuestionsResponse) => {
         if (!active) return;
         setQuestions(data.questions);
+        setActiveQuestionId((current) =>
+          current && data.questions.some((question) => question.id === current)
+            ? current
+            : null
+        );
       })
       .catch((error: unknown) => {
         if (!active) return;
@@ -90,12 +86,26 @@ export function StoredQuestionsClient({
     () => Math.max(0, ids.length - questions.length),
     [ids.length, questions.length]
   );
+  const activeIndex = activeQuestionId
+    ? questions.findIndex((question) => question.id === activeQuestionId)
+    : -1;
+  const activeQuestion = activeIndex >= 0 ? questions[activeIndex] : null;
+  const previousId = activeIndex > 0 ? questions[activeIndex - 1].id : null;
+  const nextId =
+    activeIndex >= 0 && activeIndex < questions.length - 1
+      ? questions[activeIndex + 1].id
+      : null;
 
   function removeQuestion(id: string) {
     const next = ids.filter((item) => item !== id);
     setIds(next);
     setQuestions((current) => current.filter((question) => question.id !== id));
+    setActiveQuestionId((current) => (current === id ? null : current));
     window.localStorage.setItem(storageKey, JSON.stringify(next));
+  }
+
+  function openQuestion(id: string) {
+    setActiveQuestionId(id);
   }
 
   if (loading) {
@@ -110,6 +120,30 @@ export function StoredQuestionsClient({
     return <EmptyState>{emptyText}</EmptyState>;
   }
 
+  if (activeQuestion) {
+    return (
+      <div className="space-y-4">
+        <button
+          type="button"
+          onClick={() => setActiveQuestionId(null)}
+          className="focus-ring rounded-md border border-line bg-white px-4 py-2 text-sm font-bold hover:border-mint"
+        >
+          返回列表
+        </button>
+
+        <QuestionPracticeClient
+          question={activeQuestion}
+          previousId={previousId}
+          nextId={nextId}
+          onPrevious={() => previousId && openQuestion(previousId)}
+          onNext={() => nextId && openQuestion(nextId)}
+          onReturnToChapter={() => setActiveQuestionId(null)}
+          returnLabel="返回列表"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {missingCount > 0 ? (
@@ -122,7 +156,11 @@ export function StoredQuestionsClient({
         {questions.map((question) => (
           <Panel key={question.id} className="transition hover:border-mint">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <Link href={`/question/${question.id}`} className="min-w-0 flex-1">
+              <button
+                type="button"
+                onClick={() => openQuestion(question.id)}
+                className="min-w-0 flex-1 text-left"
+              >
                 <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-bold text-ink/55">
                   <span>{question.chapter.course.name}</span>
                   <span>/</span>
@@ -138,7 +176,7 @@ export function StoredQuestionsClient({
                   text={question.content}
                   className="line-clamp-3 text-sm font-semibold leading-6 text-ink"
                 />
-              </Link>
+              </button>
 
               <button
                 type="button"

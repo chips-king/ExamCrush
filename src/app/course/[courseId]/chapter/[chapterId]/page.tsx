@@ -5,12 +5,20 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+function normalizeOptions(options: unknown): string[] {
+  if (!Array.isArray(options)) return [];
+  return options.filter((option): option is string => typeof option === "string");
+}
+
 export default async function ChapterPage({
-  params
+  params,
+  searchParams
 }: {
   params: Promise<{ courseId: string; chapterId: string }>;
+  searchParams?: Promise<{ question?: string }>;
 }) {
   const { courseId, chapterId } = await params;
+  const { question: initialQuestionId } = (await searchParams) ?? {};
   const chapter = await prisma.chapter.findUnique({
     where: { id: chapterId },
     include: {
@@ -20,8 +28,6 @@ export default async function ChapterPage({
   });
 
   if (!chapter || chapter.courseId !== courseId) notFound();
-
-  const firstQuestion = chapter.questions[0];
 
   return (
     <div>
@@ -35,20 +41,29 @@ export default async function ChapterPage({
         <ButtonLink href={`/course/${chapter.courseId}`} tone="plain">
           返回课程
         </ButtonLink>
-        {firstQuestion ? (
-          <ButtonLink href={`/question/${firstQuestion.id}`}>从第一题开始</ButtonLink>
-        ) : null}
       </div>
 
       {chapter.questions.length === 0 ? (
         <EmptyState>这个章节还没有题目。</EmptyState>
       ) : (
         <ChapterQuestionsClient
+          initialQuestionId={initialQuestionId}
           questions={chapter.questions.map((question) => ({
             id: question.id,
             type: question.type,
             content: question.content,
-            order: question.order
+            options: normalizeOptions(question.options),
+            answer: question.answer,
+            analysis: question.analysis,
+            order: question.order,
+            chapter: {
+              id: chapter.id,
+              title: chapter.title,
+              course: {
+                id: chapter.course.id,
+                name: chapter.course.name
+              }
+            }
           }))}
         />
       )}
